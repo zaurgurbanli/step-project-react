@@ -22,13 +22,11 @@ export const Homepage = ({ history }) => {
       <h1>Homepage</h1>
       <Row>
         {data.map(
-          note =>
+          (note) =>
             !note.completed && (
               <StyledDiv key={note.id}>
                 <Note
                   onClick={() => {
-                    localStorage.setItem("item", JSON.stringify(note));
-                    localStorage.setItem("reserved", JSON.stringify(note));
                     history.push(`/${note.id}`);
                   }}
                   note={note}

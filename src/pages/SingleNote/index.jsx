@@ -6,86 +6,85 @@ import { Container } from "../../commons";
 import { NavLink } from "react-router-dom";
 import { Modal } from "../../components";
 
-export const SingleNote = ({ history }) => {
-  const data = localStorage.getItem("item")
-    ? JSON.parse(localStorage.getItem("item"))
-    : JSON.parse(localStorage.getItem("reserved"));
-
+export const SingleNote = ({ history, match }) => {
   const [modalStatus, setModalStatus] = useState(false);
   const toggleModal = () => setModalStatus((v) => !v);
 
+  const [data, setData] = useState([]);
   const [fetchData, setFetchData] = useState([]);
 
   useEffect(() => {
     (async () => {
       const data = await postsFetch();
+      setData(data[match.params.id - 1]);
       setFetchData(data);
-      localStorage.removeItem("item");
     })();
   }, []);
 
   return (
-    <Container>
-      <Row>
-        <NoteContainer color={data.color}>
-          <NoteHeader>
-            <Title>{data.title}</Title>
-            <Date>{data.date}</Date>
-          </NoteHeader>
-          <Text>{data.text}</Text>
-        </NoteContainer>
-        <StyledDiv>
-          <StyledNavLink
-            to="/create"
-            onClick={() => {
-              localStorage.setItem("item", JSON.stringify(data));
-            }}
-          >
-            Edit
-          </StyledNavLink>
-          <StyledButton
-            onClick={() => {
-              updateFetch(
-                `/${data.id}`,
-                (fetchData[data.id - 1] = {
-                  ...fetchData[data.id - 1],
-                  completed: !data.completed,
-                })
-              );
-              alert(
-                `Item is set as ${
-                  fetchData[data.id - 1].completed ? "Archive" : "Actual"
-                }!`
-              );
-            }}
-          >
-            {data.completed ? "Actual" : "Archive"}
-          </StyledButton>
-          <StyledButton onClick={toggleModal}>Delete</StyledButton>
-        </StyledDiv>
-      </Row>
-      {modalStatus && (
-        <Modal
-          close={toggleModal}
-          text="Do you want to remove this note?"
-          actions={[
-            <ModalBtn
-              key={1}
-              onClick={() => {
-                deleteFetch(`/${data.id}`);
-                history.push(data.completed ? "/archive" : "/");
-                toggleModal();
-              }}
-            >
-              Remove
-            </ModalBtn>,
-            <ModalBtn key={2} onClick={toggleModal}>
-              Cancel
-            </ModalBtn>,
-          ]}
-        />
+    <>
+      {data && (
+        <Container>
+          <Row>
+            <NoteContainer color={data.color}>
+              <NoteHeader>
+                <Title>{data.title}</Title>
+                <Date>{data.date}</Date>
+              </NoteHeader>
+              <Text>{data.text}</Text>
+            </NoteContainer>
+            <StyledDiv>
+              <StyledNavLink
+                to="/create"
+                onClick={() => {
+                  localStorage.setItem("item", JSON.stringify(data));
+                }}
+              >
+                Edit
+              </StyledNavLink>
+              <StyledButton
+                onClick={() => {
+                  updateFetch(
+                    `/${data.id}`,
+                    (fetchData[data.id - 1] = {
+                      ...fetchData[data.id - 1],
+                      completed: !data.completed,
+                    })
+                  );
+                  alert(
+                    `Item is set as ${!data.completed ? "Archive" : "Actual"}!`
+                  );
+                }}
+              >
+                {data.completed ? "Actual" : "Archive"}
+              </StyledButton>
+              <StyledButton onClick={toggleModal}>Delete</StyledButton>
+            </StyledDiv>
+          </Row>
+          {modalStatus && (
+            <Modal
+              close={toggleModal}
+              text="Do you want to remove this note?"
+              actions={[
+                <ModalBtn
+                  key={1}
+                  onClick={() => {
+                    deleteFetch(`/${data.id}`);
+                    history.push(data.completed ? "/archive" : "/");
+                    toggleModal();
+                  }}
+                >
+                  Remove
+                </ModalBtn>,
+                <ModalBtn key={2} onClick={toggleModal}>
+                  Cancel
+                </ModalBtn>,
+              ]}
+            />
+          )}
+        </Container>
       )}
-    </Container>
+    </>
   );
 };
 

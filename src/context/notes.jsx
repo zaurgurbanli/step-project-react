@@ -1,23 +1,16 @@
 import React, { createContext, useReducer } from "react";
-import { postsFetch, createFetch } from "../API/fetchAPI";
 
 export const NoteContext = createContext();
 
 const ADD_NOTE = "ADD_NOTE";
-const EDIT_NOTE = "EDIT_NOTE";
 
-const addNoteAC = payload => ({
+const addNoteAC = (payload) => ({
   type: ADD_NOTE,
-  payload
-});
-
-const editNoteAC = payload => ({
-  type: EDIT_NOTE,
-  payload
+  payload,
 });
 
 const initialState = {
-  notes: []
+  notes: [],
 };
 
 function reducer(state, { type, payload }) {
@@ -25,11 +18,7 @@ function reducer(state, { type, payload }) {
     case ADD_NOTE:
       return {
         ...state,
-        notes: [...state.notes, payload]
-      };
-    case EDIT_NOTE:
-      return {
-        ...state
+        notes: [...state.notes, payload],
       };
     default:
       return state;
@@ -39,7 +28,7 @@ function reducer(state, { type, payload }) {
 export const NoteContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const addNote = note => dispatch(addNoteAC(note));
+  const addNote = (note) => dispatch(addNoteAC(note));
 
   return (
     <NoteContext.Provider value={{ ...state, addNote }}>

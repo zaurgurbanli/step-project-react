@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-export const NoteForm = ({ initial = {}, onSuccessSubmit, submitBtnText }) => {
+export const NoteForm = ({ onSuccessSubmit, submitBtnText }) => {
   const [fields, setFields] = useState({
     title: localStorage.getItem("item")
       ? JSON.parse(localStorage.getItem("item")).title
@@ -15,7 +15,6 @@ export const NoteForm = ({ initial = {}, onSuccessSubmit, submitBtnText }) => {
     completed: localStorage.getItem("item")
       ? JSON.parse(localStorage.getItem("item")).completed
       : false,
-    ...initial,
   });
 
   const onChange = (e) => {
